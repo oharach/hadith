@@ -5,7 +5,7 @@ import Hadith from './hadith';
 import Comment from './comment';
 
 const connectDb = () => {
-  return mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true});
+  return mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true, 'useCreateIndex': true});
 };
 const models = { User, Author, Hadith, Comment };
 
