@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import jwt from 'express-jwt';
+import jwksRsa from 'jwks-rsa';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -26,6 +28,21 @@ app.use(async (req, res, next) => {
   };
   next();
 });
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: 'https://ossama.eu.auth0.com/.well-known/jwks.json'
+  }),
+
+  // Validate the audience and the issuer.
+  audience: process.env.API_IDENTIFIER,
+  issuer: process.env.AUTH0_DOMAIN,
+  algorithms: ['RS256']
+});
+app.use(checkJwt);
 
 // Routes
 app.use('/session', routes.session);
