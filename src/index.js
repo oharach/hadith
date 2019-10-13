@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // adding morgan to log HTTP requests
-app.use(morgan('dev'));
+app.use(morgan('combined'));
 
 // Custom middleware
 app.use(async (req, res, next) => {
