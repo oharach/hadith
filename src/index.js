@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import morgan from 'morgan';
 
 import routes from './routes';
 import models, { connectDb } from './models';
@@ -10,6 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Logger
+app.use(morgan('dev'));
 
 // Custom middleware
 app.use(async (req, res, next) => {
