@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import helmet from 'helmet';
 import morgan from 'morgan';
 
 import routes from './routes';
@@ -8,10 +9,13 @@ import models, { connectDb } from './models';
 
 const app = express();
 
+// adding Helmet to enhance API's security
+app.use(helmet());
+// enabling CORS for all requests
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// Logger
+// adding morgan to log HTTP requests
 app.use(morgan('dev'));
 
 // Custom middleware
