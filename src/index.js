@@ -1,10 +1,9 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import jwt from 'express-jwt';
-import jwksRsa from 'jwks-rsa';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import errorHandler from './helpers/error-handlers';
 
 import routes from './routes';
 import models, { connectDb } from './models';
@@ -21,57 +20,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 
 // Custom middleware
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   req.context = {
     models,
-    me: await models.User.findByLogin('oharach'),
   };
   next();
 });
 
-const checkJwt = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: 'https://ossama.eu.auth0.com/.well-known/jwks.json'
-  }),
-
-  // Validate the audience and the issuer.
-  audience: process.env.API_IDENTIFIER,
-  issuer: process.env.AUTH0_DOMAIN,
-  algorithms: ['RS256']
-});
-app.use(checkJwt);
-
 // Routes
-app.use('/session', routes.session);
 app.use('/users', routes.user);
 app.use('/hadiths', routes.hadith);
 app.use('/comments', routes.comment);
 app.use('/authors', routes.author);
 
-app.use((req, res, next) => {
-  const error = new Error('Not Found');
-  error.status = 404;
-  next(error);
-});
-
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-      error: {
-          message: error.message
-      }
-  })
-});
+// Error handling
+app.use(errorHandler);
 
 const eraseDatabaseOnSync = true;
 
 connectDb().then(async () => {
   if (eraseDatabaseOnSync) {
     await Promise.all([
-      models.User.deleteMany({}),
       models.Hadith.deleteMany({}),
       models.Author.deleteMany({}),
       models.Comment.deleteMany({}),
@@ -86,9 +55,6 @@ connectDb().then(async () => {
 });
 
 const createData = async () => {
-  const user1 = new models.User({
-    username: 'oharach',
-  });
   const author1 = new models.Author({
     shortname: 'محمد ناصر الدين الألباني',
     longname: 'أبو عبد الرحمن محمد بن الحاج نوح بن نجاتي بن آدم الأشقودري الألباني الأرنؤوطي',
@@ -104,5 +70,4 @@ const createData = async () => {
   await author1.save();
   await hadith1.save();
   await comment1.save();
-  await user1.save();
 };
