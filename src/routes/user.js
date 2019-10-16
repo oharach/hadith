@@ -4,7 +4,7 @@ import auth from '../middleware/auth';
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
   // Create a new user
   try {
     const user = new User(req.body)
@@ -29,6 +29,11 @@ router.post('/login', async(req, res, next) => {
   } catch (error) {
       res.status(400).send(error)
   }
+})
+
+router.get('/', auth, async(req, res) => {
+  const users = await User.find();
+  return res.send(users);
 })
 
 router.get('/me', auth, async(req, res) => {
