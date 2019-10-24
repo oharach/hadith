@@ -13,7 +13,7 @@ router.get('/:commentId', async (req, res) => {
   return res.send(comment);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const comment = await req.context.models.Comment.create({
     text: req.body.text,
     author: req.body.author,
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
   return res.send(comment);
 });
 
-router.delete('/:commentId', async (req, res) => {
+router.delete('/:commentId', auth, async (req, res) => {
   const comment = await req.context.models.Comment.findById(
     req.params.commentId,
   );

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import auth from '../middleware/auth';
 
 const router = Router();
 
@@ -14,7 +15,7 @@ router.get('/:hadithId', async (req, res) => {
   return res.send(hadith);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const hadith = await req.context.models.Hadith.create({
     text_ar: req.body.text_ar,
     text_en: req.body.text_en,
@@ -24,7 +25,7 @@ router.post('/', async (req, res) => {
   return res.send(hadith);
 });
 
-router.delete('/:hadithId', async (req, res) => {
+router.delete('/:hadithId', auth, async (req, res) => {
   const hadith = await req.context.models.Hadith.findById(
     req.params.hadithId,
   );

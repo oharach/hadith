@@ -36,19 +36,7 @@ app.use('/authors', routes.author);
 // Error handling
 app.use(errorHandler);
 
-const eraseDatabaseOnSync = true;
-
 connectDb().then(async () => {
-  if (eraseDatabaseOnSync) {
-    await Promise.all([
-      models.Hadith.deleteMany({}),
-      models.Author.deleteMany({}),
-      models.Comment.deleteMany({}),
-    ]);
-
-    createData();
-  }
-
   app.listen(process.env.PORT, () =>
     console.log(`Example app listening on port ${process.env.PORT}!`),
   );

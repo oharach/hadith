@@ -13,7 +13,7 @@ router.get('/:authorId', async (req, res) => {
   return res.send(author);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   const author = await req.context.models.Author.create({
     shortname: req.body.shortname,
     longname: req.body.longname,
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
   return res.send(author);
 });
 
-router.delete('/:authorId', async (req, res) => {
+router.delete('/:authorId', auth, async (req, res) => {
   const author = await req.context.models.Author.findById(
     req.params.authorId,
   );
